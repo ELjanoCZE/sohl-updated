@@ -383,6 +383,8 @@ public:
 	float Rain_nextFadeUpdate;
 
 	int Rain_needsUpdate;
+
+	bool m_bHasIntroPlayed;
 };
 
 inline void CBasePlayer::SetWeaponBit(int id)
