@@ -558,6 +558,10 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity* pOther)
 	if (IsPlayerBusting(pOther))
 		return;
 
+	// AJH allows for locked weapons
+	if (!UTIL_IsMasterTriggered(m_sMaster, pOther))
+		return;
+
 	CBasePlayer* pPlayer = (CBasePlayer*)pOther;
 
 	// can I have this?
@@ -662,9 +666,6 @@ void CBasePlayerWeapon::SetNextThink(float delay)
 // CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
 bool CBasePlayerWeapon::AddDuplicate(CBasePlayerItem* pOriginal)
 {
-	if (!UTIL_IsMasterTriggered(m_sMaster, m_pPlayer)) //
-		return false;								   // AJH allows for locked weapons
-
 	if (0 != m_iDefaultAmmo)
 	{
 		return ExtractAmmo((CBasePlayerWeapon*)pOriginal);
@@ -679,9 +680,6 @@ bool CBasePlayerWeapon::AddDuplicate(CBasePlayerItem* pOriginal)
 
 void CBasePlayerWeapon::AddToPlayer(CBasePlayer* pPlayer)
 {
-	if (!UTIL_IsMasterTriggered(m_sMaster, pPlayer)) //
-		return;
-
 	if ((iFlags() & ITEM_FLAG_EXHAUSTIBLE) != 0 && m_iDefaultAmmo == 0 && m_iClip <= 0)
 	{
 		//This is an exhaustible weapon that has no ammo left. Don't add it, queue it up for destruction instead.
@@ -963,8 +961,9 @@ void CBasePlayerAmmo::DefaultTouch(CBaseEntity* pOther)
 		return;
 	}
 
-	if (!UTIL_IsMasterTriggered(m_sMaster, m_pPlayer)) //
-		return;										   // AJH allows for locked weapons
+	// AJH allows for locked weapons
+	if (!UTIL_IsMasterTriggered(m_sMaster, m_pPlayer))
+		return;
 
 	if (AddAmmo(pOther))
 	{
