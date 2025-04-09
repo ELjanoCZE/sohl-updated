@@ -2945,8 +2945,13 @@ void CTriggerHevCharge::ChargeTouch(CBaseEntity* pOther)
 	if (IsLockedByMaster())
 		return;
 
-	// check that it's a player with an HEV suit
-	if (!pOther->IsPlayer() || !FBitSet(pOther->pev->weapons, 1 << WEAPON_SUIT))
+	// check that it's a player
+	if (!pOther->IsPlayer())
+		return;
+
+	// check if the player is wearing a HEV suit
+	auto player = static_cast<CBasePlayer*>(pOther);
+	if (!player->HasSuit())
 		return;
 
 	//FIXME: add in the multiplayer fix, from trigger_hurt?
