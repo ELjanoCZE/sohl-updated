@@ -5806,64 +5806,68 @@ void CPlayerFreeze::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE 
 				((CBasePlayer*)((CBaseEntity*)pActivator))->EnableControl(false);
 			}
 
-			float yawRange = CalcLocus_Number(pActivator, STRING(pev->noise));
-			float pitchUpRange = CalcLocus_Number(pActivator, STRING(pev->noise1));
-			float pitchDownRange;
-			if (FStringNull(pev->noise2))
-				pitchDownRange = pitchUpRange;
-			else
-				pitchDownRange = CalcLocus_Number(pActivator, STRING(pev->noise2));
-
-			if (yawRange < 360 || pitchUpRange < 90 || pitchDownRange < 90)
+			// check if values exist at all
+			if (pev->noise != 0 || pev->noise1 != 0 || pev->noise2 != 0)
 			{
-				Vector clampTargetDir = CalcLocus_Velocity(this, pActivator, STRING(pev->netname));
-				Vector clampTargetAngle = UTIL_VecToAngles(clampTargetDir);
+				float yawRange = CalcLocus_Number(pActivator, STRING(pev->noise));
+				float pitchUpRange = CalcLocus_Number(pActivator, STRING(pev->noise1));
+				float pitchDownRange;
+				if (FStringNull(pev->noise2))
+					pitchDownRange = pitchUpRange;
+				else
+					pitchDownRange = CalcLocus_Number(pActivator, STRING(pev->noise2));
 
-				if (!FStringNull(pev->noise3))
-					turnSpeed = CalcLocus_Number(pActivator, STRING(pev->noise3));
-
-				// clamp max values
-				if (yawRange > 360)
-					yawRange = 360;
-				if (pitchUpRange > 90)
-					pitchUpRange = 90;
-				if (pitchDownRange > 90)
-					pitchDownRange = 90;
-
-				if (clampTargetAngle.x > 90)
-					clampTargetAngle.x -= 360;
-
-				float minYaw = clampTargetAngle.y - yawRange / 2;
-				float maxYaw = clampTargetAngle.y + yawRange / 2;
-				// this is viewangle pitch, so up is negative
-				float minPitch = -clampTargetAngle.x + pitchDownRange;
-				float maxPitch = -clampTargetAngle.x - pitchUpRange;
-
-				while (minYaw < 0)
+				if (yawRange < 360 || pitchUpRange < 90 || pitchDownRange < 90)
 				{
-					minYaw += 360;
-					maxYaw += 360;
-				}
+					Vector clampTargetDir = CalcLocus_Velocity(this, pActivator, STRING(pev->netname));
+					Vector clampTargetAngle = UTIL_VecToAngles(clampTargetDir);
 
-				//clamp the view
-				MESSAGE_BEGIN(MSG_ONE, gmsgClampView, NULL, pActivator->pev);
-				WRITE_SHORT(minYaw);
-				WRITE_SHORT(maxYaw);
-				WRITE_BYTE(minPitch + 128);
-				WRITE_BYTE(maxPitch + 128);
-				WRITE_LONG(*(long*)&turnSpeed);
-				MESSAGE_END();
-			}
-			else
-			{
-				//unclamp the view
-				MESSAGE_BEGIN(MSG_ONE, gmsgClampView, NULL, pActivator->pev);
-				WRITE_SHORT(0);
-				WRITE_SHORT(360);
-				WRITE_BYTE(0);
-				WRITE_BYTE(255);
-				WRITE_LONG(*(long*)&turnSpeed);
-				MESSAGE_END();
+					if (!FStringNull(pev->noise3))
+						turnSpeed = CalcLocus_Number(pActivator, STRING(pev->noise3));
+
+					// clamp max values
+					if (yawRange > 360)
+						yawRange = 360;
+					if (pitchUpRange > 90)
+						pitchUpRange = 90;
+					if (pitchDownRange > 90)
+						pitchDownRange = 90;
+
+					if (clampTargetAngle.x > 90)
+						clampTargetAngle.x -= 360;
+
+					float minYaw = clampTargetAngle.y - yawRange / 2;
+					float maxYaw = clampTargetAngle.y + yawRange / 2;
+					// this is viewangle pitch, so up is negative
+					float minPitch = -clampTargetAngle.x + pitchDownRange;
+					float maxPitch = -clampTargetAngle.x - pitchUpRange;
+
+					while (minYaw < 0)
+					{
+						minYaw += 360;
+						maxYaw += 360;
+					}
+
+					//clamp the view
+					MESSAGE_BEGIN(MSG_ONE, gmsgClampView, NULL, pActivator->pev);
+					WRITE_SHORT(minYaw);
+					WRITE_SHORT(maxYaw);
+					WRITE_BYTE(minPitch + 128);
+					WRITE_BYTE(maxPitch + 128);
+					WRITE_LONG(*(long*)&turnSpeed);
+					MESSAGE_END();
+				}
+				else
+				{
+					//unclamp the view
+					MESSAGE_BEGIN(MSG_ONE, gmsgClampView, NULL, pActivator->pev);
+					WRITE_SHORT(0);
+					WRITE_SHORT(360);
+					WRITE_BYTE(0);
+					WRITE_BYTE(255);
+					WRITE_LONG(*(long*)&turnSpeed);
+					MESSAGE_END();
+				}
 			}
 
 			pev->spawnflags |= SF_ACTIVE;
