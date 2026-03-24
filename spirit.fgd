@@ -4173,14 +4173,14 @@
 //*   This is a very powerful entity, but is probably only useful for experienced mappers.
 @PointClass base(Targetname) = multi_watcher : "State Watcher"
 [
-	m_fLogic(choices) : "Logical test" : 0 =
+	m_fLogic(choices) : "Logical test [default state]" : 0 =
 	[
-		0: "All (AND)"
-		2: "Not all (NAND)"
-		1: "At least one (OR)"
-		3: "None (NOR)"
-		4: "Exactly one (XOR)"
-		5: "Any number but one (XNOR)"
+		0: "All (AND) [ON]"
+		2: "Not all (NAND) [OFF]"
+		1: "At least one (OR) [OFF]"
+		3: "None (NOR) [ON]"
+		4: "Exactly one (XOR) [OFF]"
+		5: "Any number but one (XNOR) [ON]"
 	]
 	//*   This entity will be sent USE_ON or USE_OFF, as appropriate, whenever the watcher's state changes.
 	target(target_destination) : "Entity to notify"
@@ -4189,6 +4189,10 @@
 	[
 		//* If this is enabled, the watcher will always notify its target with USE_TOGGLE, instead of sending ON or OFF.
 		1:  "Send 'Toggle'" : 0
+		//* If this is enabled, the target won't be triggered when the watcher turns on.
+		2:  "Don't Send On" : 0
+		//* If this is enabled, the target won't be triggered when the watcher turns off.
+		4:  "Don't Send Off" : 0
 		8:  "NOT 'On'" : 0
 		16: "'Off'" : 0
 		32: "'Turn On'" : 0
@@ -4391,22 +4395,22 @@
       satchels(choices) : "Take satchel charges" : 0 =
 	[
 		0: "All"
-		-1: "None"
+		-3: "None"
 	]
 	snarks(choices) : "Take snarks" : 0 =
 	[
 		0: "All"
-		-1: "None"
+		-3: "None"
 	]
 	tripmines(choices) : "Take tripmines" : 0 =
 	[
 		0: "All"
-		-1: "None"
+		-3: "None"
 	]
 	handgrenades(choices) : "Take handgrenades" : 0 =
 	[
 		0: "All"
-		-1: "None"
+		-3: "None"
 	]
 	hornetgun(choices) : "Take Hornet Gun" : 0 =
 	[
@@ -4876,6 +4880,7 @@
 
 //* While locked by its master, the trigger_counter _will_ keep counting when fired,
 //* but it won't fire anything itself.
+//* If you refer to trigger_counter via [LN] it will return number of triggers left before activating.
 @SolidClass base(Trigger, MoveWith) = trigger_counter : "Trigger counter" 
 [
 	spawnflags(flags) = 
@@ -5270,6 +5275,9 @@
 //    ]
 //]
 
+//* Note: for func_breakable and func_pushable to be counted, it has to have m_iRespawnTime not equal to 0
+//* Set it to -1 trigger only respawn, or -2 should work without enabling respawn when triggered, but trigger destroying will need to be done via OFF or TOGGLE instead of ON.
+//* Other entities count depending on their state. In general, if it can have an active state, it needs to be active to count.
 @PointClass base(Targetname) = watcher_count : "Watcher, entity count"
 [
 	noise(string) : "Count entities named..."
@@ -5293,6 +5301,8 @@
 	[
 		//* If this is set, one set of targets (on or off) will be fired,
 		//* as appropriate, when the level starts.
+		//* netname will fire if count is less than comparison number
+		//* message will fire otherwise
 		1:  "Fire at startup" : 0
 	]
 ]
