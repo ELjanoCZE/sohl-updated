@@ -4640,7 +4640,7 @@ void CParticle::DesiredAction()
 void CParticle::Think()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgParticle);
-	WRITE_BYTE(entindex());
+	WRITE_SHORT(entindex());
 	WRITE_STRING(STRING(pev->message));
 	MESSAGE_END();
 }
