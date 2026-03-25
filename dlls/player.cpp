@@ -4555,8 +4555,8 @@ void CBasePlayer::UpdateClientData()
 			WRITE_BYTE(0);
 			MESSAGE_END();
 			m_bHasIntroPlayed = true;
+			gDisplayTitle = false;
 		}
-		gDisplayTitle = false;
 	}
 
 	if (pev->health != m_iClientHealth)
@@ -5806,11 +5806,11 @@ void CPlayerFreeze::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE 
 				((CBasePlayer*)((CBaseEntity*)pActivator))->EnableControl(false);
 			}
 
-			// check if values exist at all
-			if (pev->noise != 0 || pev->noise1 != 0 || pev->noise2 != 0)
+			// check if clamp view values are configured at all
+			if (!FStringNull(pev->noise) || !FStringNull(pev->noise1) || !FStringNull(pev->noise2))
 			{
-				float yawRange = CalcLocus_Number(pActivator, STRING(pev->noise));
-				float pitchUpRange = CalcLocus_Number(pActivator, STRING(pev->noise1));
+				float yawRange = !FStringNull(pev->noise) ? CalcLocus_Number(pActivator, STRING(pev->noise)) : 360;
+				float pitchUpRange = !FStringNull(pev->noise1) ? CalcLocus_Number(pActivator, STRING(pev->noise1)) : 90;
 				float pitchDownRange;
 				if (FStringNull(pev->noise2))
 					pitchDownRange = pitchUpRange;
