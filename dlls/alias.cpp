@@ -149,12 +149,9 @@ void CInfoAlias::Spawn(void)
 			ALERT(at_debug, "WARNING: info_alias \"%s\" has too many targets (limit is %d)\n", STRING(pev->targetname), MAX_ALIAS_TARGETS);
 			m_cTargets = MAX_ALIAS_TARGETS;
 		}
-		else
-		{
-			m_iCurrentTarget = 0;
-			pev->message = m_iTargetName[m_iCurrentTarget];
-			pev->noise = m_iTargetName[m_iCurrentTarget];
-		}
+		m_iCurrentTarget = 0;
+		pev->message = m_iTargetName[m_iCurrentTarget];
+		pev->noise = m_iTargetName[m_iCurrentTarget];
 	}
 }
 
