@@ -48,12 +48,14 @@ target_include_directories(client PRIVATE
 
 target_compile_definitions(client PRIVATE
 	CLIENT_DLL
-	HL_DLL)
+	HL_DLL
+	$<$<BOOL:${USE_GLFOG}>:USE_GLFOG>)
 
 target_link_libraries(client PRIVATE
 	vgui
 	$<$<PLATFORM_ID:Windows>:delayimp>
 	$<$<PLATFORM_ID:Windows>:wsock32>
+	$<$<AND:$<PLATFORM_ID:Windows>,$<BOOL:${USE_GLFOG}>>:opengl32>
 	SDL2)
 
 if (UNIX)
@@ -112,6 +114,11 @@ target_sources(client PRIVATE
 	vgui_teammenu.cpp
 	view.cpp
 	voice_status.cpp
+
+	# Spirit of Half-Life
+	particlemgr.cpp
+	particlemsg.cpp
+	particlesys.cpp
 
 	hl/hl_baseentity.cpp
 	hl/hl_events.cpp

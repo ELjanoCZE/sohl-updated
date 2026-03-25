@@ -21,6 +21,22 @@
 
 #include "particleman.h"
 #include "tri.h"
+
+#ifdef USE_GLFOG
+#define HSPRITE WINDOWS_HSPRITE
+#include <windows.h>
+#undef HSPRITE
+#include <gl/gl.h>
+
+typedef void (APIENTRY* PFNGLUNIFORM1IPROC)(GLint location, GLint v0);
+static PFNGLUNIFORM1IPROC glUniform1i = NULL;
+
+static void InitGLFogExtensions()
+{
+	if (!glUniform1i)
+		glUniform1i = (PFNGLUNIFORM1IPROC)wglGetProcAddress("glUniform1i");
+}
+#endif
 extern IParticleMan* g_pParticleMan;
 
 extern float g_fFogColor[4];
@@ -125,25 +141,69 @@ void CShinySurface::Draw(const Vector& org)
 
 //LRCT
 
+#ifdef USE_GLFOG
+static void SetGLFog(float* color)
+{
+	InitGLFogExtensions();
+
+	bool bFog = g_iWaterLevel < 2 && g_fStartDist > 0 && g_fEndDist > 0;
+	if (!bFog)
+	{
+		gEngfuncs.pTriAPI->Fog(Vector(0, 0, 0), 0, 0, false);
+		glDisable(GL_FOG);
+		if (glUniform1i)
+			glUniform1i(0, (int)false);
+		return;
+	}
+
+	glEnable(GL_FOG);
+	if (glUniform1i)
+		glUniform1i(0, (int)true);
+	glFogi(GL_FOG_MODE, GL_LINEAR);
+	glFogfv(GL_FOG_COLOR, color);
+	glFogf(GL_FOG_START, g_fStartDist);
+	glFogf(GL_FOG_END, g_fEndDist);
+
+	gEngfuncs.pTriAPI->Fog(color, g_fStartDist, g_fEndDist, true);
+}
+#endif
+
 void BlackFog()
 {
 	//Not in water and we want fog.
 	static float fColorBlack[3] = {0, 0, 0};
 	bool bFog = g_iWaterLevel < 2 && g_fStartDist > 0 && g_fEndDist > 0;
+#ifdef USE_GLFOG
+	if (bFog)
+		SetGLFog(fColorBlack);
+	else
+		SetGLFog(g_fFogColor);
+#else
 	if (bFog)
 		gEngfuncs.pTriAPI->Fog(fColorBlack, g_fStartDist, g_fEndDist, bFog);
 	else
 		gEngfuncs.pTriAPI->Fog(g_fFogColor, g_fStartDist, g_fEndDist, bFog);
+#endif
 }
 
 void RenderFog()
 {
 	//Not in water and we want fog.
 	bool bFog = g_iWaterLevel < 2 && g_fStartDist > 0 && g_fEndDist > 0;
+#ifdef USE_GLFOG
+	if (bFog)
+		SetGLFog(g_fFogColor);
+	else
+	{
+		gEngfuncs.pTriAPI->Fog(Vector(0, 0, 0), 0, 0, false);
+		glDisable(GL_FOG);
+		if (glUniform1i)
+			glUniform1i(0, (int)false);
+	}
+#else
 	if (bFog)
 		gEngfuncs.pTriAPI->Fog(g_fFogColor, g_fStartDist, g_fEndDist, bFog);
-	//	else
-	//		gEngfuncs.pTriAPI->Fog ( g_fFogColor, 10000, 10001, 0 );
+#endif
 }
 
 /*

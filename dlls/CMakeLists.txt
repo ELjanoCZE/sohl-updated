@@ -115,6 +115,14 @@ target_sources(hl PRIVATE
 	xen.cpp
 	zombie.cpp
 
+	# Spirit of Half-Life
+	alias.cpp
+	locus.cpp
+	movewith.cpp
+	playermonster.cpp
+	stats.cpp
+	Wxdebug.cpp
+
 	../common/mathlib.cpp
 
 	../game_shared/filesystem_utils.cpp
