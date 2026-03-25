@@ -1000,7 +1000,7 @@ bool CCalcNumFromVec::CalcNumber(CBaseEntity* pLocus, float* OUTresult)
 	}
 
 	Vector vecB;
-	bool gotB;
+	bool gotB = false;
 	if (!FStringNull(pev->netname))
 	{
 		gotB = TryCalcLocus_Velocity(this, pLocus, STRING(pev->netname), &vecB);
