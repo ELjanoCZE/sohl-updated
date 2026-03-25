@@ -5793,7 +5793,9 @@ void CPlayerFreeze::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE 
 			WRITE_SHORT(360);
 			WRITE_BYTE(0);
 			WRITE_BYTE(255);
-			WRITE_LONG(*(long*)&turnSpeed);
+			int turnSpeedBits;
+			memcpy(&turnSpeedBits, &turnSpeed, sizeof(float));
+			WRITE_LONG(turnSpeedBits);
 			MESSAGE_END();
 
 			pev->spawnflags &= ~SF_ACTIVE;
@@ -5854,7 +5856,9 @@ void CPlayerFreeze::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE 
 					WRITE_SHORT(maxYaw);
 					WRITE_BYTE(minPitch + 128);
 					WRITE_BYTE(maxPitch + 128);
-					WRITE_LONG(*(long*)&turnSpeed);
+					int clampTurnSpeedBits;
+					memcpy(&clampTurnSpeedBits, &turnSpeed, sizeof(float));
+					WRITE_LONG(clampTurnSpeedBits);
 					MESSAGE_END();
 				}
 				else
@@ -5865,7 +5869,9 @@ void CPlayerFreeze::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE 
 					WRITE_SHORT(360);
 					WRITE_BYTE(0);
 					WRITE_BYTE(255);
-					WRITE_LONG(*(long*)&turnSpeed);
+					int unclampTurnSpeedBits;
+					memcpy(&unclampTurnSpeedBits, &turnSpeed, sizeof(float));
+					WRITE_LONG(unclampTurnSpeedBits);
 					MESSAGE_END();
 				}
 			}

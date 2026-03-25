@@ -244,7 +244,8 @@ void CHud ::MsgFunc_ClampView(const char* pszName, int iSize, void* pbuf)
 	g_clampMaxYaw = READ_SHORT();
 	g_clampMinPitch = READ_BYTE() - 128;
 	g_clampMaxPitch = READ_BYTE() - 128;
-	*(long*)&g_clampTurnSpeed = READ_LONG();
+	int turnSpeedBits = READ_LONG();
+	memcpy(&g_clampTurnSpeed, &turnSpeedBits, sizeof(float));
 }
 
 bool CHud::MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf)
