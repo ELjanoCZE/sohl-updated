@@ -950,6 +950,8 @@ bool CCalcNumFromEnt::CalcNumber(CBaseEntity* pLocus, float* OUTresult)
 			{
 				if (FStrEq(STRING(target->pev->classname), "watcher_count"))
 				{
+					if (target->pev->impulse == 0)
+						return false;
 					*OUTresult = target->pev->iuser1 / target->pev->impulse;
 					return true;
 				}
