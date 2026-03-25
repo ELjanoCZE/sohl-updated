@@ -59,17 +59,18 @@ void ProcessRain(void)
 		return;
 	}
 
-	if (Rain.dripsPerSecond == 0 && FirstChainDrip.p_Next == NULL)
+	if (Rain.dripsPerSecond == 0)
 	{
-		// keep nextspawntime correct
+		// keep nextspawntime correct, let existing drips finish but don't spawn new ones
 		rain_nextspawntime = rain_curtime;
-		return;
+		if (FirstChainDrip.p_Next == NULL)
+			return;
 	}
 
 	if (rain_timedelta == 0)
 		return; // not in pause
 
-	double timeBetweenDrips = 1 / (double)Rain.dripsPerSecond;
+	double timeBetweenDrips = Rain.dripsPerSecond > 0 ? 1 / (double)Rain.dripsPerSecond : 0;
 
 	cl_drip* curDrip = FirstChainDrip.p_Next;
 	cl_drip* nextDrip = NULL;
