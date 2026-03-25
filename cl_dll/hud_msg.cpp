@@ -363,7 +363,7 @@ bool CHud ::MsgFunc_Inventory(const char* pszName, int iSize, void* pbuf) //AJH 
 			g_iInventory[i] = 0;
 		}
 	}
-	else
+	else if (i >= 1 && i <= MAX_ITEMS)
 	{
 		i -= 1; // subtract one so g_iInventory[0] can be used. (lowest ITEM_* is defined as '1')
 		g_iInventory[i] = READ_SHORT();
