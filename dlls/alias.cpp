@@ -185,7 +185,7 @@ void CInfoAlias::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE use
 		{
 			m_iCurrentTarget--;
 			if (m_iCurrentTarget <= -1)
-				m_iCurrentTarget = m_cTargets;
+				m_iCurrentTarget = m_cTargets - 1;
 		}
 		else
 		{
